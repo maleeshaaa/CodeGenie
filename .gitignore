@@ -1,0 +1,45 @@
+# Ignore build output directories
+bin/
+obj/
+
+# Ignore user-specific files
+*.user
+*.userosscache
+*.suo
+*.userprefs
+
+# Ignore ASP.NET Core environment variables
+appsettings.Development.json
+appsettings.Production.json
+appsettings.json
+
+# Ignore logs
+*.log
+
+# Ignore database files
+*.db
+*.bak
+*.sql
+
+# Ignore NuGet package files
+*.nupkg
+.nuget/
+
+# Ignore all files in the .vscode directory
+.vscode/
+
+# Ignore the virtual environment for Python projects
+venv/
+
+# Ignore IDE-specific files
+.idea/
+
+# Ignore node_modules (if using Node.js for any front-end work)
+node_modules/
+
+# Ignore compiled files and dependency folders
+.DS_Store
+Thumbs.db
+
+# Ignore OpenAI API Key (ensure that the API key is not exposed)
+*.env
