@@ -1,0 +1,6 @@
+@CodeGenie_HostAddress = http://localhost:5262
+
+GET {{CodeGenie_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
