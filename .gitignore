@@ -43,3 +43,8 @@ Thumbs.db
 
 # Ignore OpenAI API Key (ensure that the API key is not exposed)
 *.env
+
+.vs/
+*.vsidx
+DocumentLayout.json
+DocumentLayout.backup.json
