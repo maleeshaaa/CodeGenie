@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using CodeGenie.Models;
+using CodeGenie.Services;
 
 [ApiController]
 [Route("api/users")]
@@ -19,10 +20,25 @@ public class UsersController : ControllerBase
         return Ok(users);
     }
 
-    [HttpPost]
-    public async Task<IActionResult> CreateUser(User user)
+    // POST: api/user/register
+    [HttpPost("register")]
+    public async Task<IActionResult> Register([FromBody] RegisterModel model)
     {
-        await _userService.AddUserAsync(user);
-        return CreatedAtAction(nameof(GetUsers), new { id = user.Id }, user);
+        var result = await _userService.RegisterUserAsync(model.Username, model.Email, model.Password);
+        if (result == "User registered successfully.")
+            return Ok(result);
+
+        return BadRequest(result);
+    }
+
+    // POST: api/user/login
+    [HttpPost("login")]
+    public async Task<IActionResult> Login([FromBody] LoginModel model)
+    {
+        var result = await _userService.LoginUserAsync(model.Username, model.Password);
+        if (result.StartsWith("Bearer"))
+            return Ok(new { Token = result });
+
+        return Unauthorized(result);
     }
 }

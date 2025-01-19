@@ -1,5 +1,10 @@
 using Microsoft.EntityFrameworkCore;
 using CodeGenie.Data;
+using CodeGenie.Services;
+using CodeGenie.Repositories;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,6 +15,24 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 // Register Repositories and Services
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
+
+// Add JWT Authentication
+var jwtSecretKey = builder.Configuration["Jwt:Secret"];
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecretKey)),
+            ValidateIssuer = false,
+            ValidateAudience = false,
+            ValidateLifetime = true
+        };
+    });
+
+// Add Authorization
+builder.Services.AddAuthorization();
 
 // Add Controllers support
 builder.Services.AddControllers();
@@ -28,7 +51,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.UseAuthorization();
-app.MapControllers();  // Uses Controller-based APIs
+app.UseAuthentication();  // Enable Authentication Middleware
+app.UseAuthorization();   // Enable Authorization Middleware
+app.MapControllers();     // Uses Controller-based APIs
 
 app.Run();

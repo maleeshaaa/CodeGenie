@@ -1,29 +1,36 @@
-using Microsoft.EntityFrameworkCore;
-using CodeGenie.Data;
 using CodeGenie.Models;
+using Microsoft.EntityFrameworkCore;
 
-public class UserRepository : IUserRepository
+namespace CodeGenie.Repositories
 {
-    private readonly ApplicationDbContext _context;
-
-    public UserRepository(ApplicationDbContext context)
+    public class UserRepository : IUserRepository
     {
-        _context = context;
-    }
+        private readonly Data.ApplicationDbContext _context;
 
-    public async Task<List<User>> GetAllUsersAsync()
-    {
-        return await _context.Users.ToListAsync();
-    }
+        public UserRepository(Data.ApplicationDbContext context)
+        {
+            _context = context;
+        }
 
-    public async Task<User?> GetUserByIdAsync(int id)
-    {
-        return await _context.Users.FindAsync(id);
-    }
+        public async Task<List<User>> GetAllUsersAsync()
+        {
+            return await _context.Users.ToListAsync();
+        }
 
-    public async Task AddUserAsync(User user)
-    {
-        _context.Users.Add(user);
-        await _context.SaveChangesAsync();
+        public async Task AddUserAsync(User user)
+        {
+            await _context.Users.AddAsync(user);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<User> GetUserByEmailAsync(string email)
+        {
+            return await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+        }
+
+        public async Task<User> GetUserByUsernameAsync(string username)
+        {
+            return await _context.Users.FirstOrDefaultAsync(u => u.Username == username);
+        }
     }
 }
