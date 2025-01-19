@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using CodeGenie.Data;
-using CodeGenie.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,7 +7,14 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// Add services to the container for Swagger
+// Register Repositories and Services
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IUserService, UserService>();
+
+// Add Controllers support
+builder.Services.AddControllers();
+
+// Add Swagger for API documentation
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -22,23 +28,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
-// Sample API endpoint to retrieve all users from the database
-app.MapGet("/users", async (ApplicationDbContext db) =>
-{
-    return await db.Users.ToListAsync();
-})
-.WithName("GetUsers")
-.WithOpenApi();
-
-// Sample API endpoint to create a new user
-app.MapPost("/users", async (User user, ApplicationDbContext db) =>
-{
-    db.Users.Add(user);
-    await db.SaveChangesAsync();
-    return Results.Created($"/users/{user.Id}", user);
-})
-.WithName("CreateUser")
-.WithOpenApi();
+app.UseAuthorization();
+app.MapControllers();  // Uses Controller-based APIs
 
 app.Run();
